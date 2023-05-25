@@ -1,8 +1,8 @@
 import fs from "fs";
 
 export class ProductManager {
-  constructor() {
-    this.path = "./src/product.json";
+  constructor(path) {
+    this.path = path;
   }
   async getProducts() {
     try {
@@ -39,7 +39,7 @@ export class ProductManager {
       const newProduct = { id: id, ...product };
       data.push(newProduct);
       const productString = JSON.stringify(data, null, 2);
-      await fs.promises.writeFile("./src/product.json", productString);
+      await fs.promises.writeFile(this.path, productString);
       return newProduct;
     } catch (error) {
       throw new Error(error);
@@ -64,7 +64,7 @@ export class ProductManager {
     if (position !== -1) {
       data[position] = { ...data[position], ...newData };
       const productString = JSON.stringify(data, null, 2);
-      await fs.promises.writeFile("product.json", productString);
+      await fs.promises.writeFile(this.path, productString);
       return "product updated";
     }
   }
@@ -130,8 +130,16 @@ const product6 = {
   code: "12345678",
   price: 1234567,
 };
+const product7 = {
+  title: "campera",
+  description: "campera3",
+  thumbnail: "foto",
+  stock: 20,
+  code: "12345678900",
+  price: 1234567,
+};
 
- const productsManager = new ProductManager();
+const productsManager = new ProductManager("./src/product.json");
 const asyncFn = async () => {
   await productsManager.addProduct(product1);
   await productsManager.addProduct(product2);
@@ -139,5 +147,6 @@ const asyncFn = async () => {
   await productsManager.addProduct(product4);
   await productsManager.addProduct(product5);
   await productsManager.addProduct(product6);
+  await productsManager.addProduct(product7);
 };
-asyncFn(); 
+asyncFn();

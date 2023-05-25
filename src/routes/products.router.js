@@ -1,7 +1,7 @@
 import express from "express";
 import { ProductManager } from "../productManager.js";
 
-const products = new ProductManager("./productos.json");
+const products = new ProductManager("./src/product.json");
 export const productsRouter = express.Router();
 
 productsRouter.get("/", async (req, res, next) => {
@@ -48,14 +48,7 @@ productsRouter.post("/", async (req, res, next) => {
         msg: "Product already exists",
       });
     }
-    const requiredField = [
-      "title",
-      "description",
-      "code",
-      "price",
-      "stock",
-    
-    ];
+    const requiredField = ["title", "description", "code", "price", "stock"];
     const allFields = requiredField.every((prop) => newProduct[prop]);
     if (newProduct.id == undefined && allFields) {
       newProduct = {
@@ -116,7 +109,7 @@ productsRouter.delete("/:pid", async (req, res, next) => {
       return res.status(201).json({
         status: "Success",
         msg: "product deleted",
-        data: {},
+        data: products,
       });
     }
   } catch {

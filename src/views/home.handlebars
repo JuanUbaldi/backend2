@@ -1,14 +1,15 @@
-<div><h2>Lista de prendas</h2></div>
-<ul>{{#each products}}
-<li>
-<h3>{{title}}</h3>
-<p>id:{{id}}</p>
-<p>{{description}}</p>
-precio:{{price}}
-stock:{{stock}}
-categoria:{{category}}
-codigo:{{code}}
-thumbnail:{{image}}
-</li>
-{{/each}}
-</ul>
+<div>
+  <h1>LISTADO DE PRODUCTOS</h1>
+  {{#each prods}}
+    <div style="width: 14rem; margin-top: 5px;">
+      <div style="margin-top: 10px; width:200px; height:200px;">
+        <img src={{this.thumbnail}} alt="foto de Product {{this.id}}" />
+      </div>
+      <div>
+        <h3>{{this.title}}</h3>
+        <p>{{this.description}}</p>
+        <p>$ {{this.price}}</p>
+      </div>
+    </div>
+  {{/each}}
+</div>
