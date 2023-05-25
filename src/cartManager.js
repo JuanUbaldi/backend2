@@ -114,7 +114,7 @@ export class CartManager {
   async deleteAll() {
     try {
       fs.writeFileSync("carts.json", "[]", "utf-8");
-      return "Carritos eliminados";
+      return "Carritos eliminados....";
     } catch (err) {
       console.log(err);
     }
