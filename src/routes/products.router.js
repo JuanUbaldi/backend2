@@ -1,12 +1,13 @@
 import express from "express";
-import { ProductManager } from "../productManager.js";
+import { ProductManager } from "../dao/productManager.js";
+import { userModel } from "../dao/models/products.models.js";
 
 const products = new ProductManager("./src/product.json");
 export const productsRouter = express.Router();
 
 productsRouter.get("/", async (req, res, next) => {
   try {
-    const data = await products.getProducts();
+    const data = await userModel.find({});
     const limit = req.query.limit;
     const limitedProducts = limit ? data.slice(0, limit) : data;
     res.status(200).json(limitedProducts);
@@ -37,7 +38,7 @@ productsRouter.get("/:pid", async (req, res, next) => {
   }
 });
 
-productsRouter.post("/", async (req, res, next) => {
+/* productsRouter.post("/", async (req, res, next) => {
   try {
     const data = await products.getProducts();
     let newProduct = req.body;
@@ -76,7 +77,7 @@ productsRouter.post("/", async (req, res, next) => {
         .json({ status: "error", msg: "Error in server", data: {} });
     }
   }
-});
+}); */
 
 productsRouter.put("/:pid", async (req, res, next) => {
   try {

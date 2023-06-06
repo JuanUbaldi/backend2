@@ -1,6 +1,6 @@
 import express from "express";
-import { ProductManager } from "../productManager.js";
-import CartManager from "../cartManager.js";
+import { ProductManager } from "../dao/productManager.js";
+import CartManager from "../dao/cartManager.js";
 
 const products = new ProductManager("./src/product.json");
 const carts = new CartManager("./src/carts.json");
