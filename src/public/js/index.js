@@ -1,40 +1,39 @@
 const socket = io();
-const form = document.getElementById('form');
-let newProduct ={};
-form.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const title = form.elements.title.value;
-    const description = form.elements.description.value;
-    const price = form.elements.price.value;
-    const thumbnail = form.elements.thumbnail.value;
-    const code = form.elements.code.value;
-    const stock = form.elements.stock.value;
-    const category = form.elements.category.value;
-    const status = form.elements.status.value;
-    
-    newProduct = {title, description, price, thumbnail, code, stock, category, status};
+const form = document.getElementById("form");
+let newProduct = {};
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const title = form.elements.title.value;
+  const description = form.elements.description.value;
+  const price = form.elements.price.value;
+  const thumbnail = form.elements.thumbnail.value;
+  const code = form.elements.code.value;
+  const stock = form.elements.stock.value;
 
-    //FRONT EMITE
-    socket.emit('msg_from_client_to_server', newProduct);
-    form.reset();
+  newProduct = { title, description, price, thumbnail, code, stock };
+
+  //FRONT EMITE
+  socket.emit("msg_from_client_to_server", newProduct);
+  form.reset();
 });
 
-const deleteForm = document.getElementById('deleteForm');
+const deleteForm = document.getElementById("deleteForm");
 
-deleteForm.addEventListener('submit', (event) => {
+deleteForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const id = deleteForm.elements.id.value;
-  socket.emit('deleteProduct', id);
+  socket.emit("deleteProduct", id);
   deleteForm.reset();
 });
 
-
 //FRONT RECIBE
-socket.on('updatedProducts', (data) => {
-    const productList = document.getElementById('productList');
-    productList.innerHTML = '';
-    productList.innerHTML += `
-      ${data.productList.map((product) => `
+socket.on("updatedProducts", (data) => {
+  const productList = document.getElementById("productList");
+  productList.innerHTML = "";
+  productList.innerHTML += `
+      ${data.productList
+        .map(
+          (product) => `
         <div class="card product__container" style="width: 14rem;">
           <div>
             <img src=${product.thumbnail} class="card-img-top" alt="foto de Product ${product.id}">
@@ -45,6 +44,8 @@ socket.on('updatedProducts', (data) => {
             <p class="card-text">${product.price}</p>
           </div>
         </div>
-      `).join('')}
+      `
+        )
+        .join("")}
     `;
-  });
+});

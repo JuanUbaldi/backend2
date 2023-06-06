@@ -1,123 +1,115 @@
-import express from "express";
-import { ProductManager } from "../dao/productManager.js";
-import { userModel } from "../dao/models/products.models.js";
+import express from 'express';
+import ProductService from '../services/products.service.js';
 
-const products = new ProductManager("./src/product.json");
 export const productsRouter = express.Router();
+const productService = new ProductService();
 
-productsRouter.get("/", async (req, res, next) => {
-  try {
-    const data = await userModel.find({});
-    const limit = req.query.limit;
-    const limitedProducts = limit ? data.slice(0, limit) : data;
-    res.status(200).json(limitedProducts);
-  } catch (err) {
-    if (err instanceof Error) {
-      res.status(500).json({ status: "error", msg: "Invalid input", data: {} });
-    } else {
-      res
-        .status(500)
-        .json({ status: "error", msg: "Error in server", data: {} });
+productsRouter.get('/', async (req, res) => {
+    try {
+        const products = await productService.getAllProducts();
+        console.log(products);
+        return res.status(200).json({
+            status: 'success',
+            msg: 'Products retrieved',
+            payload: products,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({
+        status: 'error',
+        msg: error.message,
+        });
     }
-  }
 });
 
-productsRouter.get("/:pid", async (req, res, next) => {
-  try {
-    const id = req.params.pid;
-    const dataId = await products.getProductById(parseInt(id));
-    res.status(200).json(dataId);
-  } catch (err) {
-    if (err instanceof Error) {
-      res.status(500).json({ status: "error", msg: "Invalid input", data: {} });
-    } else {
-      res
-        .status(500)
-        .json({ status: "error", msg: "Error in server", data: {} });
+productsRouter.get('/:id', async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const product = await productService.getProductById(productId);
+        if (!product) {
+            return res.status(404).json({
+            status: 'error',
+            msg: 'Product not found',
+        })}
+        return res.status(200).json({
+            status: 'success',
+            msg: 'Product retrieved',
+            payload: product,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({
+            status: 'error',
+            msg: error.message,
+        });
     }
-  }
 });
 
-/* productsRouter.post("/", async (req, res, next) => {
-  try {
-    const data = await products.getProducts();
-    let newProduct = req.body;
-    let findproduct = data.find((ele) => ele.code === newProduct.code);
-    if (findproduct) {
-      return res.status(400).json({
-        status: "error",
-        msg: "Product already exists",
-      });
+productsRouter.post('/', async (req, res) => {
+    try {
+        const productData = req.body;
+        const createdProduct = await productService.createProduct(productData);
+        return res.status(201).json({
+            status: 'success',
+            msg: 'Product created',
+            payload: createdProduct,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({
+            status: 'error',
+            msg: error.message,
+        });
     }
-    const requiredField = ["title", "description", "code", "price", "stock"];
-    const allFields = requiredField.every((prop) => newProduct[prop]);
-    if (newProduct.id == undefined && allFields) {
-      newProduct = {
-        ...newProduct,
-        id: (Math.random() * 10000000).toFixed(0),
-      };
-      await products.addProduct({ ...newProduct, status: true });
-      return res.status(200).json({
-        status: "success",
-        msg: "Product added successfully",
-        data: newProduct,
-      });
-    } else {
-      res.status(400).json({
-        status: "error",
-        msg: "Invalid input",
-      });
-    }
-  } catch (err) {
-    if (err instanceof Error) {
-      res.status(500).json({ status: "error", msg: "Invalid input", data: {} });
-    } else {
-      res
-        .status(500)
-        .json({ status: "error", msg: "Error in server", data: {} });
-    }
-  }
-}); */
-
-productsRouter.put("/:pid", async (req, res, next) => {
-  try {
-    const id = req.params.pid;
-    const data = await products.getProducts();
-    let changeProduct = req.body;
-    await products.updateProduct(id, changeProduct);
-    return res.status(201).json({
-      status: "Success",
-      msg: "product updated",
-      data: changeProduct,
-    });
-  } catch {
-    res.status(500).json({ status: "error", msg: "Invalid input", data: {} });
-  }
 });
 
-productsRouter.delete("/:pid", async (req, res, next) => {
-  try {
-    const id = req.params.pid;
-    const data = await products.getProducts();
-    let findProduct = data.find((prod) => prod.id == id);
-    if (!findProduct) {
-      return res.status(400).json({
-        status: "error",
-        msg: "Product not found",
-      });
-    } else {
-      await products.deleteProduct(id);
-      return res.status(201).json({
-        status: "Success",
-        msg: "product deleted",
-        data: products,
-      });
+productsRouter.put('/:id', async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const productData = req.body;
+        const updatedProduct = await productService.updateProduct(productId, productData);
+        if (!updatedProduct) {
+            return res.status(404).json({
+                status: 'error',
+                msg: 'Product not found',
+            });
+        }
+        return res.status(200).json({
+            status: 'success',
+            msg: 'Product updated',
+            payload: updatedProduct,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({
+        status: 'error',
+        msg: error.message,
+        });
     }
-  } catch {
-    res.status(500).json({ status: "error", msg: "Invalid input", data: {} });
-  }
 });
 
-productsRouter.get("*", (req, res, next) => {
-  res.status(404).json({ status: "error", msg: "Route not found", data: {} });
+productsRouter.delete('/:id', async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const deletedProduct = await productService.deleteProduct(productId);
+        if (!deletedProduct) {
+            return res.status(404).json({
+                status: 'error',
+                msg: 'Product not found',
+            });
+        }
+        return res.status(200).json({
+            status: 'success',
+            msg: 'Product deleted',
+            payload: deletedProduct,
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({
+        status: 'error',
+        msg: error.message,
+        });
+    }
 });
+
+export default productsRouter;

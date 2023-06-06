@@ -1,84 +1,97 @@
-import express from "express";
-import { ProductManager } from "../dao/productManager.js";
-import CartManager from "../dao/cartManager.js";
-
-const products = new ProductManager("./src/product.json");
-const carts = new CartManager("./src/carts.json");
+import express from 'express';
+import CartService from '../services/carts.service.js';
 
 export const cartsRouter = express.Router();
 
-cartsRouter.get("/", async (req, res, next) => {
+const cartService = new CartService();
+
+cartsRouter.post("/", async (req, res) => {
   try {
-    const data = await carts.createCart();
-    res.status(200).json(data);
-  } catch (err) {
-    if (err instanceof Error) {
-      res.status(500).json({ status: "error", msg: "Invalid input", data: {} });
-    } else {
-      res
-        .status(500)
-        .json({ status: "error", msg: "Error in server", data: {} });
-    }
+    const cart = await cartService.createCart();
+    return res.status(201).json({
+      status: 'success',
+      msg: 'Cart created',
+      payload: cart
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({
+      status: 'error',
+      msg: error.message,
+    });
   }
 });
 
-cartsRouter.post("/", async (req, res, next) => {
+cartsRouter.get("/:cid", async (req, res) => {
   try {
-    const data = await carts.createCart();
-    await carts.addCart({ products: [] });
-    res.status(200).json(data);
-  } catch (err) {
-    if (err instanceof Error) {
-      res.status(500).json({ status: "error", msg: "Invalid input", data: {} });
-    } else {
-      res
-        .status(500)
-        .json({ status: "error", msg: "Error in server", data: {} });
-    }
+    const idCart = req.params.cid;
+    const cart = await cartService.getCartById(idCart);
+    return res.status(200).json({
+      status: 'success',
+      msg: 'Cart found',
+      payload: cart
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({
+      status: 'error',
+      msg: error.message,
+    });
   }
 });
 
-cartsRouter.get("/:cid", async (req, res, next) => {
+cartsRouter.delete("/:cid", async (req, res) => {
   try {
-    const dataCarts = await carts.createCart();
-    const id = req.params.cid;
-    const dataId = await carts.getCartById(parseInt(id));
-    if (dataId) {
-      res.status(200).json(dataId);
-    } else {
-      res.status(200).json(`No existe el carrito id: ${id}`);
-    }
-  } catch {
-    res.status(500).json({ status: "error", msg: "Error in server", data: {} });
+    const idCart = req.params.cid;
+    const cart = await cartService.deleteCartById(idCart);
+    return res.status(200).json({
+      status: 'success',
+      msg: 'Cart deleted',
+      payload: cart
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({
+      status: 'error',
+      msg: error.message,
+    });
   }
 });
 
-cartsRouter.post("/:cid/products/:pid", async (req, res, next) => {
+cartsRouter.post("/:cid/products/:pid", async (req, res) => {
   try {
-    const dataCarts = await carts.getCarts();
-    const dataProducts = await products.getProducts();
-    const cartId = req.params.cid;
-    const productId = req.params.pid;
-    const cartFound = dataCarts.find((ele) => ele.id == cartId);
-    if (!cartFound) {
-      res.status(200).json(`No existe el carrito id: ${cartId}`);
-    }
-    const productFound = dataProducts.find(
-      (ele) => ele.id == parseInt(productId)
-    );
-    if (!productFound) {
-      res.status(200).json(`No existe el producto id: ${productId}`);
-    }
-    const product = await carts.updateCart(
-      parseInt(cartId),
-      parseInt(productId)
-    );
-    res.status(200).json(product);
-  } catch {
-    res.status(500).json({ status: "error", msg: "Error in server", data: {} });
+    const idCart = req.params.cid;
+    const idProd = req.params.pid;
+    const cart = await cartService.addProductToCart(idCart, idProd);
+    return res.status(200).json({
+      status: 'success',
+      msg: 'Product added to cart',
+      payload: cart
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({
+      status: 'error',
+      msg: error.message,
+    });
   }
 });
 
-cartsRouter.get("*", (req, res, next) => {
-  res.status(404).json({ status: "error", msg: "Route not found", data: {} });
+cartsRouter.delete("/:cid/products/:pid", async (req, res) => {
+  try {
+    const idCart = req.params.cid;
+    const idProd = req.params.pid;
+    const cart = await cartService.removeProductFromCart(idCart, idProd);
+    return res.status(200).json({
+      status: 'success',
+      msg: 'Product removed from cart',
+      payload: cart
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({
+      status: 'error',
+      msg: error.message,
+    });
+  }
 });
