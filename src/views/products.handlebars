@@ -2,8 +2,8 @@
   <div style="display: flex; justify-content: space-between; padding: 30px">
       <h1>LISTADO DE PRODUCTOS</h1>
       <div> ORDENAR
-        <a href="?page={{paginationInfo.page}}&limit={{paginationInfo.limit}}&sort=asc">&#8593;</a>
-        <a href="?page={{paginationInfo.page}}&limit={{paginationInfo.limit}}&sort=desc">&#8595;</a>
+        <a href="?page=1&limit={{paginationInfo.limit}}&sort=asc&category={{category}}&status={{status}}">&#8593;</a>
+        <a href="?page=1&limit={{paginationInfo.limit}}&sort=desc&category={{category}}&status={{status}}">&#8595;</a>
       </div>
   </div>
     {{#each prods}}
@@ -15,6 +15,7 @@
             <h3 class="card-title">{{this.title}}</h3>
             <p class="card-text">{{this.description}}</p>
             <p class="card-text">$ {{this.price}}</p>
+            <button onclick="addToCart('{{this.id}}')" class="btn btn-primary">Agregar al carrito</button>
         </div>
     </div>
     {{/each}}
@@ -22,11 +23,12 @@
 <div style="display: flex; justify-content: center; margin-top: 30px">
   <div class="pagination">
     {{#if paginationInfo.hasPrevPage}}
-    <a href="?page={{paginationInfo.prevPage}}&limit={{paginationInfo.limit}}&sort={{sort}}">&lt; Anterior</a>
+    <a href="?page={{paginationInfo.prevPage}}&limit={{paginationInfo.limit}}&sort={{sort}}&category={{category}}&status={{status}}">&lt; Anterior</a>
     {{/if}}
     <span style="margin-left: 20px; margin-right: 20px">Página {{paginationInfo.page}} de {{paginationInfo.totalPages}}</span>
     {{#if paginationInfo.hasNextPage}}
-    <a href="?page={{paginationInfo.nextPage}}&limit={{paginationInfo.limit}}&sort={{sort}}">Siguiente &gt;</a>
+    <a href="?page={{paginationInfo.nextPage}}&limit={{paginationInfo.limit}}&sort={{sort}}&category={{category}}&status={{status}}">Siguiente &gt;</a>
     {{/if}}
   </div>
 </div>
+<script src="/js/products.js"></script>

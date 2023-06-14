@@ -1,94 +1,59 @@
-<div id="">
-  <form id="form" action="/api/products" method="post">
-    <div style="margin-left: 20px;">
-      <div>
-        <div><input
-            style="margin-top: 10px"
-            type="text"
-            placeholder="Ingrese Título"
-            value=""
-            name="title"
-            required
-          /></div>
-        <div><input
-            style="margin-top: 10px"
-            type="text"
-            placeholder="Ingrese Descripción"
-            value=""
-            name="description"
-            required
-          /></div>
-      </div>
-      <div class="row">
-        <div><input
-            style="margin-top: 10px"
-            type="code"
-            placeholder="Ingrese Código"
-            value=""
-            name="code"
-            required
-          /></div>
-        <div><input
-            style="margin-top: 10px"
-            type="number"
-            placeholder="Ingrese Precio"
-            value=""
-            name="price"
-            required
-          /></div>
-        <div><input
-            style="margin-top: 10px"
-            type="number"
-            placeholder="Ingrese Stock"
-            value=""
-            name="stock"
-            required
-          /></div>
-      </div>
-      <div class="row">
-        <div><input
-            style="margin-top: 10px"
-            type="text"
-            placeholder="Ingrese URL de la imagen"
-            name="thumbnail"
-            required
-          /></div>
-      </div>
-      <button style="margin-top: 10px" type="submit">Guardar</button>
-    </div>
-  </form>
-  <form id="deleteForm" action="/api/products" method="delete">
-    <div style="margin-left: 20px;">
-      <div>
-        <div><input
-            type="text"
-            style="margin-top: 10px;"
-            placeholder="Ingrese ID del producto a ELIMINAR"
-            name="id"
-          /></div>
-        <div><button type="submit">Eliminar</button></div>
-      </div>
-    </div>
-  </form>
-  <h1>LISTADO DE PRODUCTOS</h1>
-  <div>
-    {{#each prods}}
-      <div style="width: 14rem; margin-top: 5px;">
-        <div style="margin-top: 10px; width:200px; height:200px;">
-          <img
-            src={{this.thumbnail}}
-            class="card-img-top"
-            alt="foto de Product {{this.id}}"
-          />
+<div  id="">
+    <form id="form" action="/api/products" method="post" enctype="multipart/form-data">
+        <div class="form-group" style="margin-left: 20px;">
+            <div class="row">
+                <div class="col"><input style="margin-top: 10px" type="text" class="form-control" placeholder="Ingrese Título" value="" name="title" required></div>
+                <div class="col"><input style="margin-top: 10px" type="text" class="form-control" placeholder="Ingrese Descripción" value="" name="description" required></div>
+                <div class="col"><input style="margin-top: 10px" type="text" class="form-control" placeholder="Ingrese Categoría" value="" name="category" required></div>
+                <input style="margin-top: 10px" type="hidden" class="form-control" value="true" name="status" required>
+            </div>
+            <div class="row">
+                <div class="col"><input style="margin-top: 10px" type="code" class="form-control" placeholder="Ingrese Código" value="" name="code" required></div>
+                <div class="col"><input style="margin-top: 10px" type="number" class="form-control" placeholder="Ingrese Precio" value="" name="price" required></div>
+                <div class="col"><input style="margin-top: 10px" type="number" class="form-control" placeholder="Ingrese Stock" value="" name="stock" required></div>
+            </div>
+            <div class="row">
+                <div class="col"><input style="margin-top: 10px" type="text" class="form-control" placeholder="Ingrese URL de la imagen"name="thumbnail" required></div>
+            </div>
+            <button style="margin-top: 10px" type="submit" class="btn btn-primary btn-lg btn-block">Guardar</button>
         </div>
-        <div class="card-body">
-          <h3 class="card-title">{{this.title}}</h3>
-          <p class="card-text">{{this.description}}</p>
-          <p class="card-text">$ {{this.price}}</p>
+    </form>
+    <div style="display: flex; justify-content: space-between; padding: 30px">
+        <h1>LISTADO DE PRODUCTOS</h1>
+        <div> ORDENAR
+            <a href="?page={{paginationInfo.page}}&limit={{paginationInfo.limit}}&sort=asc">&#8593;</a>
+            <a href="?page={{paginationInfo.page}}&limit={{paginationInfo.limit}}&sort=desc">&#8595;</a>
         </div>
-      </div>
-    {{/each}}
-  </div>
+    </div>
+    <div class="row product justify-content-evenly" id="productList">
+        {{#each prods}}
+        <div class="card product__container" style="width: 14rem; margin-top: 5px;">
+            <div style="margin-top: 10px; width:200px; height:200px;">
+                <img src={{this.thumbnail}} class="card-img-top" alt="foto de Product {{this.id}}">
+            </div>
+            <div class="card-body">
+                <h3 class="card-title">{{this.title}}</h3>
+                <p class="card-text">{{this.description}}</p>
+                <p class="card-text">$ {{this.price}}</p>
+                <form class="delete-form" action="/api/products/{{this.id}}" method="delete">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="button" class="btn btn-danger delete-button" data-product-id="{{this.id}}">Eliminar</button>
+                </form>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
+<div style="display: flex; justify-content: center; margin-top: 30px">
+    <div class="pagination">
+        {{#if paginationInfo.hasPrevPage}}
+        <a href="?page={{paginationInfo.prevPage}}&limit={{paginationInfo.limit}}&sort={{sort}}">&lt; Anterior</a>
+        {{/if}}
+        <span style="margin-left: 20px; margin-right: 20px">Página {{paginationInfo.page}} de {{paginationInfo.totalPages}}</span>
+        {{#if paginationInfo.hasNextPage}}
+        <a href="?page={{paginationInfo.nextPage}}&limit={{paginationInfo.limit}}&sort={{sort}}">Siguiente &gt;</a>
+        {{/if}}
+    </div>
 </div>
 <script src="/socket.io/socket.io.js"></script>
-<script src="public/js/index.js"></script>
+<script src="/js/index.js"></script>

@@ -32,3 +32,10 @@ export async function connectMongo() {
     throw "can not connect to the db";
   }
 }
+
+
+
+
+
+
+

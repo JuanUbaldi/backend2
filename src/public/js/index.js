@@ -9,31 +9,31 @@ form.addEventListener("submit", (event) => {
   const thumbnail = form.elements.thumbnail.value;
   const code = form.elements.code.value;
   const stock = form.elements.stock.value;
+  const category = form.elements.category.value;
+  const status = form.elements.status.value;
 
-  newProduct = { title, description, price, thumbnail, code, stock };
+  newProduct = { title, description, price, thumbnail, code, stock , category, status};
 
-  //FRONT EMITE
-  socket.emit("msg_from_client_to_server", newProduct);
-  form.reset();
-});
-
-const deleteForm = document.getElementById("deleteForm");
-
-deleteForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const id = deleteForm.elements.id.value;
-  socket.emit("deleteProduct", id);
-  deleteForm.reset();
-});
+     //FRONT EMITE
+     socket.emit('msg_from_client_to_server', newProduct);
+     form.reset();
+ });
+ 
+ document.querySelectorAll('.delete-button').forEach((button) => {
+   button.addEventListener('click', (event) => {
+     event.preventDefault();
+     const id = button.dataset.productId;
+     socket.emit('deleteProduct', id);
+   });
+ });
 
 //FRONT RECIBE
-socket.on("updatedProducts", (data) => {
-  const productList = document.getElementById("productList");
-  productList.innerHTML = "";
-  productList.innerHTML += `
-      ${data.productList
-        .map(
-          (product) => `
+socket.on('updatedProducts', (data) => {
+  console.log(data);
+    const productList = document.getElementById('productList');
+    productList.innerHTML = '';
+    productList.innerHTML += `
+      ${data.productList.docs.map((product) => `
         <div class="card product__container" style="width: 14rem;">
           <div>
             <img src=${product.thumbnail} class="card-img-top" alt="foto de Product ${product.id}">
@@ -44,8 +44,6 @@ socket.on("updatedProducts", (data) => {
             <p class="card-text">${product.price}</p>
           </div>
         </div>
-      `
-        )
-        .join("")}
+      `).join('')}
     `;
-});
+  });

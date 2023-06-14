@@ -9,4 +9,6 @@ const productSchema = new Schema({
   stock: { type: Number, required: true }
 }, { versionKey: false });
 
+productSchema.plugin(mongoosePaginate);
+
 export const ProductModel = model('products', productSchema);

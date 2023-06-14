@@ -1,57 +1,74 @@
-import { ProductModel } from "../dao/models/products.models.js";
+import { ProductModel } from "../dao/models/products.model.js";
 
 class ProductService {
-  async getAllProducts() {
-    try {
-      const products = await ProductModel.find({});
-      return products; /* .docs.map(product => product.toObject()); */
-    } catch (error) {
-      throw error;
-    }
-  }
+    async getAllProducts(page, limit, sort, category, status) {
+        try {
+            const options = {}
+            if(page){
+                options.page = page || 1
+            }
+            if(limit){
+                options.limit = limit || 10
+            }
+            if(sort){
+                options.sort = { price: sort === 'desc' ? -1 : 1 };
+            }
 
-  async getProductById(productId) {
-    try {
-      const product = await ProductModel.findById(productId);
-      return product;
-    } catch (error) {
-      throw error;
-    }
-  }
+            const filter = {};
+            if(category){
+                filter.category = category || '';
+            }
+            if(status){
+                filter.status = status || true;
+            }
 
-  async createProduct(productData) {
-    try {
-      const product = await ProductModel.create(productData);
-      return product;
-    } catch (error) {
-      throw error;
-    }
-  }
+            const products = await ProductModel.paginate(filter, options);
 
-  async updateProduct(productId, productData) {
-    try {
-      if (!productId) {
-        throw new Error("invalid id");
-      }
-      const product = await ProductModel.findByIdAndUpdate(
-        productId,
-        productData
-        /* { new: true } */
-      );
-      return product;
-    } catch (error) {
-      throw error;
+            return products;
+        } catch (error) {
+            throw error;
+        }
     }
-  }
 
-  async deleteProduct(productId) {
-    try {
-      const product = await ProductModel.findByIdAndDelete(productId);
-      return product;
-    } catch (error) {
-      throw error;
+    async getProductById(productId) {
+        try {
+            const product = await ProductModel.findById(productId);
+            return product;
+        } catch (error) {
+            throw error;
+        }
     }
-  }
-}
+
+    async createProduct(productData) {
+        try {
+            const product = await ProductModel.create(productData);
+            return product;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async updateProduct(productId, productData) {
+        try {
+            const product = await ProductModel.findByIdAndUpdate(
+                productId,
+                productData,
+                { new: true }
+            );
+            return product;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    async deleteProduct(productId) {
+        try {
+            const product = await ProductModel.findByIdAndDelete(productId);
+            return product;
+        } catch (error) {
+            throw error;
+        }
+    }
+};
 
 export default ProductService;
